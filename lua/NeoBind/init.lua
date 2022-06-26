@@ -1,7 +1,7 @@
 M = {}
 
 local buf, win
-
+local notes_dir = "/Users/sanketjadhav/allProjects/+Study/notes"
 
 M.create_window = function (w, h)
     -- create a buffer
@@ -75,6 +75,27 @@ end
 M.open_recent_window = function ()
     M.create_window(80, 80)
     M.list_recent_files(win, buf)
+end
+
+M.open_file_in_float = function()
+    local file_name = vim.api.nvim_get_current_line()
+    local path = notes_dir.."/"..file_name
+    vim.api.nvim_command("edit "..path)
+end
+
+M.open_notes = function ()
+    M.create_window(80, 80)
+    local output = vim.api.nvim_exec("!ls /Users/sanketjadhav/allProjects/+Study/notes", {":!"})
+    local list = {}
+    for file in (output):gmatch('(.-)\n') do
+        table.insert(list, #list + 1, file)
+    end
+    -- remove the first element
+    table.remove(list, 1)
+    vim.api.nvim_buf_set_option(buf, 'modifiable', true)
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, list)
+    vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+    vim.api.nvim_buf_set_keymap(buf, 'n',',n', ':lua require "neobind".open_file_in_float()<CR>', {})
 end
 
 M.open_jump_window = function ()
