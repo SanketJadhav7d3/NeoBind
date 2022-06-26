@@ -59,7 +59,7 @@ M.list_recent_files = function (win, buf)
 end
 
 M.open_file = function ()
-    if win and vim.api.nvim_win_is_valide(win) then
+    if win and vim.api.nvim_win_is_valid(win) then
         -- open file in a new buffer
         -- get the path
         local path = vim.api.nvim_get_current_line()
