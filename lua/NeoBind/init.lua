@@ -1,9 +1,9 @@
-
 M = {}
 
 local buf, win
 
-M.create_window = function ()
+
+M.create_window = function (w, h)
     -- create a buffer
     buf = vim.api.nvim_create_buf(false, true)
 
@@ -12,8 +12,8 @@ M.create_window = function ()
     local width = vim.api.nvim_get_option("columns")
 
     -- floating window height and width
-    local win_height = math.ceil(height * 0.8)
-    local win_width = math.ceil(width * 0.8)
+    local win_height = math.ceil(height * (h / 100)) -- h percent of the total screen
+    local win_width = math.ceil(width * (w / 100)) -- w percent of the total screen
 
     -- floating window starting position
     local win_x = math.ceil((height - win_height) / 2 - 1)
@@ -72,14 +72,21 @@ M.open_file = function ()
     end
 end
 
-M.open_recent = function ()
-    M.create_window()
+M.open_recent_window = function ()
+    M.create_window(80, 80)
     M.list_recent_files(win, buf)
 end
 
--- jump to window
+M.open_jump_window = function ()
+    M.create_window(80, 10) 
+    vim.api.nvim_buf_set_lines(0, 0, 0, false, {">>> "})
+    vim.api.nvim_win_set_cursor(0, {1, 5})
+    vim.api.nvim_buf_set_keymap(0, 'n', ",j", ":echo 'pressed j'<CR>", {})
+end
 
-vim.api.nvim_set_keymap('n', ',,r', ':lua require "NeoBind".open_recent()<CR>', {})
+-- jump to window
+vim.api.nvim_set_keymap('n', ',,r', ':lua require "NeoBind".open_recent_window()<CR>', {})
 vim.api.nvim_set_keymap('n', ',n', ':lua require "NeoBind".open_file()<CR>', {})
+vim.api.nvim_set_keymap('n', ',,j', ':lua require "NeoBind".open_jump_window()<CR>', {})
 
 return M
