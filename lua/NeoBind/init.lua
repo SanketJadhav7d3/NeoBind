@@ -4,7 +4,7 @@ local buf, win
 local notes_dir = "/Users/sanketjadhav/allProjects/+Study/notes"
 
 M.create_window = function (w, h)
-    -- create a buffer
+    -- create a buffer which will be wiped once focus is lost
     buf = vim.api.nvim_create_buf(false, true)
 
     -- get win height and width
@@ -25,7 +25,8 @@ M.create_window = function (w, h)
         width = win_width,
         height = win_height,
         row = win_x,
-        col = win_y
+        col = win_y,
+        border = 'rounded'
     }
 
     vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
@@ -35,7 +36,7 @@ M.create_window = function (w, h)
 end
 
 M.list_recent_files = function (win, buf)
-    vim.api.nvim_buf_set_option(buf, 'modifiable', true)
+    vim.api.nvim_buf_set_option(0, 'modifiable', true)
     local item_count = vim.api.nvim_win_get_height(win) - 3
     local recentfiles = vim.api.nvim_get_vvar("oldfiles")
     local list = {}
@@ -55,7 +56,7 @@ M.list_recent_files = function (win, buf)
     local width = vim.api.nvim_win_get_width(win)
     vim.api.nvim_buf_set_lines(buf, 1, 1, false, {string.rep('-', width)})
     vim.api.nvim_buf_set_lines(buf, 2, -1, false, list)
-    vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+    vim.api.nvim_buf_set_option(0, 'modifiable', false)
 end
 
 M.open_file = function ()
@@ -105,9 +106,17 @@ M.open_jump_window = function ()
     vim.api.nvim_buf_set_keymap(0, 'n', ",j", ":echo 'pressed j'<CR>", {})
 end
 
+M.gif_animation_window = function ()
+    local path = "/Users/sanketjadhav/allProjects/+lab/AsciiPython/anim.py"
+    M.create_window(80, 80)
+    -- execute the python file
+    vim.api.nvim_command("term ")
+end
+
 -- jump to window
 vim.api.nvim_set_keymap('n', ',,r', ':lua require "NeoBind".open_recent_window()<CR>', {})
 vim.api.nvim_set_keymap('n', ',n', ':lua require "NeoBind".open_file()<CR>', {})
 vim.api.nvim_set_keymap('n', ',,j', ':lua require "NeoBind".open_jump_window()<CR>', {})
+vim.api.nvim_set_keymap('n', ',e', ':lua require "NeoBind".open_file_in_float()<CR>', {})
 
 return M
